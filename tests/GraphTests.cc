@@ -35,6 +35,51 @@ TEST_F(GraphTest, AddRemoveEdge) {
     ASSERT_FALSE(graph.has_edge("A", "B"));
 }
 
+TEST_F(GraphTest, BreadthFirstSearch_PrintResult) {
+    std::vector<std::string> visited_vertices;
+    auto action = [&visited_vertices](const std::string& vertex) {
+        visited_vertices.push_back(vertex);
+        std::cout << vertex << " -> ";
+        };
+
+    std::cout << "BFS traversal result: ";
+    graph.walk("A", action);
+    std::cout << std::endl;
+
+    ASSERT_EQ(visited_vertices.size(), 4);
+    ASSERT_EQ(visited_vertices[0], "A");
+    ASSERT_EQ(visited_vertices[1], "B");
+    ASSERT_EQ(visited_vertices[2], "C");
+    ASSERT_EQ(visited_vertices[3], "D");
+}
+
+TEST_F(GraphTest, BreadthFirstSearch_GetVertices) {
+    std::vector<std::string> visited_vertices;
+    auto action = [&visited_vertices](const std::string& vertex) {
+        visited_vertices.push_back(vertex);
+        };
+
+    graph.walk("A", action);
+
+    ASSERT_EQ(visited_vertices.size(), 4);
+    ASSERT_EQ(visited_vertices[0], "A");
+    ASSERT_EQ(visited_vertices[1], "B");
+    ASSERT_EQ(visited_vertices[2], "C");
+    ASSERT_EQ(visited_vertices[3], "D");
+}
+
+TEST_F(GraphTest, DijkstraShortestPath) {
+    std::vector<Graph<std::string, double>::Edge> path = graph.shortest_path("A", "D");
+
+    ASSERT_EQ(path.size(), 2);
+    ASSERT_EQ(path[0].from, "A");
+    ASSERT_EQ(path[0].to, "C");
+    ASSERT_EQ(path[0].distance, 1.5);
+    ASSERT_EQ(path[1].from, "C");
+    ASSERT_EQ(path[1].to, "D");
+    ASSERT_EQ(path[1].distance, 2.5);
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
