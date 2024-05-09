@@ -36,9 +36,6 @@ public:
         }
         return true;
     }
-    std::unordered_set<Vertex> vertices() const {
-        return _vertices;
-    }
 
     void add_edge(const Vertex& from, const Vertex& to, const Distance& d) {
         if (!has_vertex(from) || !has_vertex(to))
@@ -81,9 +78,6 @@ public:
         const auto& edges = _edges.at(e.from);
         return std::find(edges.begin(), edges.end(), e) != edges.end();
     }
-    std::vector<Edge> edges(const Vertex& vertex) {
-        return _edges[vertex];
-    }
 
     size_t order() const {
         return _vertices.size();
@@ -116,6 +110,7 @@ public:
             distance[v] = std::numeric_limits<Distance>::infinity();
             predecessor[v] = Edge();
         }
+
         distance[from] = Distance();
         pq.insert({ Distance(), from });
 
@@ -165,7 +160,55 @@ public:
             }
         }
     }
+
+    Vertex find_furthest_hospital() {
+        std::unordered_map<Vertex, double> avg_distances;
+
+        std::unordered_set<Vertex> vertices_ = vertices();
+
+        for (const auto& v : vertices_) {
+            double total_distance = 0.0;
+            int num_neighbors = 0;
+
+            for (const auto& u : vertices_) {
+                if (u != v) {
+                        std::vector<Edge> path = shortest_path(v, u);
+                        double path_distance = 0.0;
+                        for (const auto& edge : path) {
+                            path_distance += edge.distance;
+                        }
+                        total_distance += path_distance;
+                        num_neighbors++;
+                }
+            }
+            if (num_neighbors > 0) {
+                avg_distances[v] = total_distance / num_neighbors;
+            }
+        }
+
+        Vertex furthest_hospital;
+        double max_avg_distance = -1.0;
+
+        for (const auto& pair : avg_distances) {
+            const Vertex& v = pair.first;
+            double distance = pair.second;
+
+            if (distance > max_avg_distance) {
+                max_avg_distance = distance;
+                furthest_hospital = v;
+            }
+        }
+
+        return furthest_hospital;
+    }
 private:
     std::unordered_set<Vertex> _vertices;
     std::unordered_map<Vertex, std::vector<Edge>> _edges;
+
+    std::unordered_set<Vertex> vertices() const {
+        return _vertices;
+    }
+    std::vector<Edge> edges(const Vertex& vertex) {
+        return _edges[vertex];
+    }
 };

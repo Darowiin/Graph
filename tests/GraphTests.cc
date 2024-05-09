@@ -80,6 +80,12 @@ TEST_F(GraphTest, DijkstraShortestPath) {
     ASSERT_EQ(path[1].distance, 2.5);
 }
 
+TEST_F(GraphTest, FindFurthestHospital) {
+    std::string furthest_hospital = graph.find_furthest_hospital();
+
+    ASSERT_EQ(furthest_hospital, "A");
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
